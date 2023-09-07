@@ -17,6 +17,8 @@
 package catalyst
 
 import (
+	"math/big"
+
 	"github.com/scroll-tech/go-ethereum/common"
 	"github.com/scroll-tech/go-ethereum/common/hexutil"
 )
@@ -67,4 +69,24 @@ type newBlockResponse struct {
 
 type genericResponse struct {
 	Success bool `json:"success"`
+}
+
+//go:generate go run github.com/fjl/gencodec -type SafeL2Data -field-override safeL2DataMarshaling -out gen_l2_sd.go
+
+// SafeL2Data is the block data which is approved in L1 and considered to be safe
+type SafeL2Data struct {
+	Number       uint64   `json:"number"         gencodec:"required"`
+	GasLimit     uint64   `json:"gasLimit"       gencodec:"required"`
+	BaseFee      *big.Int `json:"baseFeePerGas"`
+	Timestamp    uint64   `json:"timestamp"      gencodec:"required"`
+	Transactions [][]byte `json:"transactions"   gencodec:"required"`
+}
+
+// JSON type overrides for SafeL2Data.
+type safeL2DataMarshaling struct {
+	Number       hexutil.Uint64
+	GasLimit     hexutil.Uint64
+	Timestamp    hexutil.Uint64
+	Transactions []hexutil.Bytes
+	BaseFee      *hexutil.Big
 }
