@@ -25,7 +25,6 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-
 	"github.com/scroll-tech/go-ethereum/event"
 	"github.com/scroll-tech/go-ethereum/log"
 	"github.com/scroll-tech/go-ethereum/node"
@@ -207,7 +206,7 @@ func (sn *SimNode) ServeRPC(conn *websocket.Conn) error {
 	if err != nil {
 		return err
 	}
-	codec := rpc.NewFuncCodec(conn, conn.WriteJSON, conn.ReadJSON)
+	codec := rpc.NewFuncCodec(conn, func(v any, _ bool) error { return conn.WriteJSON(v) }, conn.ReadJSON)
 	handler.ServeCodec(codec, 0)
 	return nil
 }
